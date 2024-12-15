@@ -7,6 +7,7 @@
     "cra-template": "1.2.0",
     "express": "^4.21.2",
     "fs-extra": "^11.2.0",
+    "gh-pages": "^6.2.0",
     "path": "^0.12.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -17,7 +18,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "server": "node server.js"
   },
   "eslintConfig": {
     "extends": [
