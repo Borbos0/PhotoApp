@@ -86,7 +86,6 @@ const App = () => {
               isAuthenticated ? <Navigate to="/gallery" /> : <Register />
             }
           />
-          {/* Путь по умолчанию */}
           <Route
             path="*"
             element={<Navigate to={isAuthenticated ? "/gallery" : "/login"} />}

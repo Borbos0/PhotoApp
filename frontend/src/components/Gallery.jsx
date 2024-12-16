@@ -10,13 +10,13 @@ import FilterControls from "./FilterControls";
 const PHOTOS_PER_PAGE = 15;
 
 const Gallery = () => {
-  const { photos, fetchPhotos } = usePhotos();
+  const { photos, fetchPhotos, deletePhotos } = usePhotos(); // Добавлено deletePhotos
   const [likedPhotos, setLikedPhotos] = useState(
     () => JSON.parse(localStorage.getItem("likedPhotos")) || []
   );
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
-  const [selectedPhotos, setSelectedPhotos] = useState([]);
+  const [selectedPhotos, setSelectedPhotos] = useState([]); // Выбранные фото для удаления
   const [currentPage, setCurrentPage] = useState(1);
 
   // filter
@@ -81,6 +81,17 @@ const Gallery = () => {
     );
   };
 
+  const handleDelete = async () => {
+    if (selectedPhotos.length === 0) {
+      alert("Please select photos to delete.");
+      return;
+    }
+
+    const photoUrlsToDelete = selectedPhotos.map((photo) => photo.url);
+    await deletePhotos(photoUrlsToDelete); // Вызываем метод удаления из usePhotos
+    setSelectedPhotos([]); // Сбрасываем выбранные фотографии
+  };
+
   const openModal = (photo) => {
     if (!showCheckboxes) {
       setSelectedPhoto(photo);
@@ -109,6 +120,9 @@ const Gallery = () => {
       >
         {showCheckboxes ? "Hide Checkboxes" : "Show Checkboxes"}
       </button>
+      {showCheckboxes && selectedPhotos.length > 0 && (
+        <button onClick={handleDelete}>Delete Selected</button>
+      )}
       <div className="gallery">
         {currentPhotos.map((photo) => (
           <PhotoItem

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export default function usePhotos() {
   const [photos, setPhotos] = useState([]);
@@ -27,5 +27,27 @@ export default function usePhotos() {
       .catch((err) => console.error("Error loading photos:", err));
   };
 
-  return { photos, fetchPhotos };
+  const deletePhotos = async (photoUrls) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ files: photoUrls }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      setPhotos((prevPhotos) =>
+        prevPhotos.filter((photo) => !photoUrls.includes(photo.url))
+      );
+    } catch (error) {
+      console.error("Error deleting photos:", error);
+    }
+  };
+
+  return { photos, fetchPhotos, deletePhotos };
 }
