@@ -25,5 +25,11 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 - [ ] try to make search bar (with tag or same functional)
 - [ ] add new route for random photo every 10 seconds
 - [ ] add kind of database for users or photo
+- [ ] make a backup photos via archive
+- [ ] add dark theme
+- [ ] add responsive design for mobile
+- [ ] add websocket
+- [ ] add tests
+- [ ] make animation interface
 - [ ] make a docker package
 - [ ] deploy project 😣
