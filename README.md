@@ -1,17 +1,29 @@
+## Usability
+
+Приложение сделано для удобного хранения и просмотра фотографий на странице сайта
+
 ## Available Scripts
 
-In the project directory, you can run:
+In the backend directory, you can run:
 
-### `npm start && node server.js`
+### `node server.js`
+
+In the frontend directory, you can run:
+
+### `npm run start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ToDo list
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- [x] make backend
+- [x] make frontend
+- [x] add login or registration
+- [x] add drag-and-drop for new photos
+- [ ] add Cache API or something else
+- [ ] try to make search bar (with tag or same functional)
+- [ ] add new route for random photo every 10 seconds
+- [ ] add kind of database for users or photo
+- [ ] make a docker package
+- [ ] deploy project 😣
