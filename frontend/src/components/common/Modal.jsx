@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/Modal.css";
+import "../../styles/Modal.css";
 
 const Modal = ({ photo, onClose }) => {
   if (!photo) return null;

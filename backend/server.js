@@ -103,13 +103,20 @@ app.post("/api/upload", upload.array("photos", 10), (req, res) => {
 
 app.get("/api/photos", async (req, res) => {
   const folderPath = path.join(__dirname, "uploads");
+  const options = {
+    page: parseInt(req.query.page) || 1,
+    limit: parseInt(req.query.limit) || 20
+  };
 
   try {
-    const photos = await scanPhotos(folderPath);
-    res.json(photos);
+    const result = await scanPhotos(folderPath, options);
+    res.json(result);
   } catch (err) {
     console.error("Error reading photos:", err.message);
-    res.status(500).send("Error reading photos");
+    res.status(500).json({ 
+      error: "Error reading photos",
+      message: err.message 
+    });
   }
 });
 
@@ -123,14 +130,26 @@ app.post("/api/delete", async (req, res) => {
   try {
     for (const file of files) {
       const filePath = path.join(__dirname, "uploads", file);
+      console.log('Attempting to delete:', filePath);
+
       if (await fs.pathExists(filePath)) {
         await fs.remove(filePath);
+        console.log('Successfully deleted:', filePath);
+      } else {
+        console.log('File not found:', filePath);
       }
     }
-    res.send({ message: "Files deleted successfully!" });
+    
+    res.json({ 
+      message: "Files deleted successfully!",
+      deletedFiles: files
+    });
   } catch (err) {
     console.error("Error deleting files:", err.message);
-    res.status(500).send("Error deleting files");
+    res.status(500).json({ 
+      error: "Error deleting files",
+      message: err.message 
+    });
   }
 });
 

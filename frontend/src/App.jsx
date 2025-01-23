@@ -6,14 +6,14 @@ import {
   Link,
   Navigate,
 } from "react-router-dom";
-import Gallery from "./components/Gallery";
-import LikedPhotos from "./components/LikedPhotos";
-import PhotoViewer from "./components/PhotoViewer";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Gallery from "./components/gallery/Gallery";
+import LikedPhotos from "./components/gallery/LikedPhotos";
+import Login from "./components/login/Login";
+import Register from "./components/login/Register";
+import UploadPhotos from "./components/upload/UploadPhoto";
+import "./styles/App.css";
 
 const App = () => {
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -21,21 +21,10 @@ const App = () => {
     setIsAuthenticated(!!token);
   }, []);
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
+  const handleLogin = () => setIsAuthenticated(true);
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
-  };
-
-  const handlePhotoClick = (photo) => {
-    setSelectedPhoto(photo);
-  };
-
-  const closeViewer = () => {
-    setSelectedPhoto(null);
   };
 
   return (
@@ -44,11 +33,9 @@ const App = () => {
         <nav>
           <Link to="/gallery">Gallery</Link>
           <Link to="/liked">Liked Photos</Link>
+          <Link to="/upload">Upload Photos</Link>
           {!isAuthenticated ? (
-            <>
-              <Link to="/login">Login</Link>
-              {/* <Link to="/register">Register</Link> */}
-            </>
+            <Link to="/login">Login</Link>
           ) : (
             <button onClick={handleLogout}>Logout</button>
           )}
@@ -56,18 +43,18 @@ const App = () => {
         <Routes>
           <Route
             path="/gallery"
-            element={
-              isAuthenticated ? (
-                <Gallery onPhotoClick={handlePhotoClick} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
+            element={isAuthenticated ? <Gallery /> : <Navigate to="/login" />}
           />
           <Route
             path="/liked"
             element={
               isAuthenticated ? <LikedPhotos /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/upload"
+            element={
+              isAuthenticated ? <UploadPhotos /> : <Navigate to="/login" />
             }
           />
           <Route
@@ -91,9 +78,6 @@ const App = () => {
             element={<Navigate to={isAuthenticated ? "/gallery" : "/login"} />}
           />
         </Routes>
-        {selectedPhoto && (
-          <PhotoViewer photo={selectedPhoto} onClose={closeViewer} />
-        )}
       </div>
     </Router>
   );

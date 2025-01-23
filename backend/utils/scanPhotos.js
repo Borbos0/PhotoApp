@@ -3,40 +3,69 @@ const path = require("path");
 
 const isImage = (file) => {
   const ext = path.extname(file).toLowerCase();
-  return [".jpg", ".jpeg", ".png", ".gif"].includes(ext);
+  return [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext);
 };
 
-const scanPhotos = async (folderPath) => {  
-  const absoluteFolderPath = path.resolve(folderPath);
+const scanPhotos = async (folderPath, options = {}) => {  
+  const { page = 1, limit = 20 } = options;
 
-  if (!(await fs.pathExists(absoluteFolderPath))) {
-    console.error(`Folder does not exist: ${absoluteFolderPath}`);
-    throw new Error(`Folder not found: ${absoluteFolderPath}`);
-  }
+  try {
+    const absoluteFolderPath = path.resolve(folderPath);
 
-  const photos = [];
-  const files = await fs.readdir(absoluteFolderPath); // Получаем файлы из папки
-  console.log(`Found files: ${files.join(", ")}`); // logging files
-
-  for (const file of files) {
-    const filePath = path.join(absoluteFolderPath, file);
-    const stats = await fs.stat(filePath);
-
-    if (stats.isDirectory()) {
-      const nestedPhotos = await scanPhotos(path.join(folderPath, file));
-      photos.push(...nestedPhotos);
-    } else if (isImage(file)) {
-      console.log(`Adding image: ${file}`); // logging img
-      photos.push({
-        name: file,
-        url: `/uploads/${file}`,
-        tag: null,
-        date: null,
-      });
+    if (!(await fs.pathExists(absoluteFolderPath))) {
+      throw new Error(`Folder not found: ${absoluteFolderPath}`);
     }
-  }
 
-  return photos;
+    const allFiles = await fs.readdir(absoluteFolderPath);
+    const photos = [];
+
+    // Photos
+    for (const file of allFiles) {
+      if (isImage(file)) {
+        const filePath = path.join(absoluteFolderPath, file);
+        const stats = await fs.stat(filePath);
+        
+        photos.push({
+          name: file,
+          url: `/uploads/${file}`,
+          date: stats.mtime,
+          size: stats.size,
+          tag: null,
+        });
+      }
+    }
+
+    // Сортируем фото по дате
+    photos.sort((a, b) => b.date - a.date);
+
+    // Проверяем валидность параметров пагинации
+    const validPage = Math.max(1, parseInt(page));
+    const validLimit = Math.max(1, Math.min(parseInt(limit), 50));
+
+    // Вычисляем индексы для пагинации
+    const startIndex = (validPage - 1) * validLimit;
+    const endIndex = Math.min(startIndex + validLimit, photos.length);
+
+    // Получаем фотографии для текущей страницы
+    const paginatedPhotos = photos.slice(startIndex, endIndex);
+
+    // Проверяем, есть ли еще фотографии
+    const hasMore = endIndex < photos.length;
+
+    return {
+      photos: paginatedPhotos,
+      total: photos.length,
+      page: validPage,
+      limit: validLimit,
+      hasMore,
+      startIndex,
+      endIndex
+    };
+
+  } catch (error) {
+    console.error('Error in scanPhotos:', error);
+    throw error;
+  }
 };
 
 module.exports = scanPhotos;
