@@ -21,11 +21,11 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 - [x] make frontend
 - [x] add login or registration
 - [x] add drag-and-drop for new photos
-- [ ] add Cache API or something else
+- [ ] ~~add Cache API or something else~~
 - [ ] try to make search bar (with tag or same functional)
-- [ ] add new route for random photo every 10 seconds
+- [x] add new route for random photo every 10 seconds (5 second for now)
 - [ ] add kind of database for users or photo
-- [ ] make a backup photos via archive
+- [x] make a backup photos via archive
 - [ ] add dark theme
 - [ ] add responsive design for mobile
 - [ ] add websocket
