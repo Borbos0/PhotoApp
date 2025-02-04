@@ -6,7 +6,7 @@ import PhotoItem from "../common/PhotoItem";
 import ConfirmModal from "../common/Confirm";
 
 const Gallery = () => {
-  const { photos, loading, deletePhotos, total } = usePhotos();
+  const { photos, loading, deletePhotos, total, createArchive } = usePhotos();
   const [likedPhotos, setLikedPhotos] = useState(
     () => JSON.parse(localStorage.getItem("likedPhotos")) || []
   );
@@ -14,6 +14,8 @@ const Gallery = () => {
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [archiveUrl, setArchiveUrl] = useState(null);
+  const [isArchiving, setIsArchiving] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -67,7 +69,32 @@ const Gallery = () => {
     }
   };
 
+  // Данные по фотографии
   const closeModal = () => setSelectedPhoto(null);
+  const currentIndex = selectedPhoto
+    ? photos.findIndex((p) => p.url === selectedPhoto.url)
+    : -1;
+
+  const goToPrev = () => {
+    if (currentIndex > 0) {
+      setSelectedPhoto(photos[currentIndex - 1]);
+    }
+  };
+
+  const goToNext = () => {
+    if (currentIndex < photos.length - 1) {
+      setSelectedPhoto(photos[currentIndex + 1]);
+    }
+  };
+
+  const handleArchive = async () => {
+    setIsArchiving(true);
+    const url = await createArchive();
+    if (url) {
+      setArchiveUrl(url);
+    }
+    setIsArchiving(false);
+  };
 
   return (
     <div>
@@ -87,6 +114,20 @@ const Gallery = () => {
             Delete Selected ({selectedPhotos.length})
           </button>
         )}
+        <button
+          onClick={
+            archiveUrl
+              ? () => (window.location.href = archiveUrl)
+              : handleArchive
+          }
+          disabled={isArchiving}
+        >
+          {isArchiving
+            ? "Архивация..."
+            : archiveUrl
+            ? "Скачать архив"
+            : "Архивировать"}
+        </button>
       </div>
 
       <div className="gallery">
@@ -111,7 +152,12 @@ const Gallery = () => {
         </div>
       )}
 
-      <Modal photo={selectedPhoto} onClose={closeModal} />
+      <Modal
+        photo={selectedPhoto}
+        onClose={closeModal}
+        onPrev={goToPrev}
+        onNext={goToNext}
+      />
 
       {showDeleteConfirm && (
         <ConfirmModal

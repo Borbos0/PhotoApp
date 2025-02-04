@@ -5,6 +5,7 @@ const multer = require("multer");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const scanPhotos = require("./utils/scanPhotos");
+const archiver = require("archiver");
 
 const app = express();
 const port = 5000;
@@ -150,6 +151,41 @@ app.post("/api/delete", async (req, res) => {
       error: "Error deleting files",
       message: err.message 
     });
+  }
+});
+
+app.get("/api/archive", async (req, res) => {
+  const uploadsDir = path.join(__dirname, "uploads");
+  const archivePath = path.join(uploadsDir, "archive.zip");
+
+  try {
+    const files = await fs.readdir(uploadsDir);
+    if (files.length === 0) {
+      return res.status(400).json({ error: "No files to archive" });
+    }
+
+    const output = fs.createWriteStream(archivePath);
+    const archive = archiver("zip", { zlib: { level: 9 } });
+
+    output.on("close", () => {
+      res.json({ url: `/uploads/archive.zip` });
+    });
+
+    archive.on("error", (err) => res.status(500).json({ error: err.message }));
+
+    archive.pipe(output);
+    
+    files.forEach((file) => {
+      const filePath = path.join(uploadsDir, file);
+      if (file !== "archive.zip") {
+        archive.file(filePath, { name: file });
+      }
+    });
+
+    await archive.finalize();
+  } catch (err) {
+    console.error("Error creating archive:", err.message);
+    res.status(500).json({ error: "Error creating archive", message: err.message });
   }
 });
 

@@ -11,6 +11,7 @@ import LikedPhotos from "./components/gallery/LikedPhotos";
 import Login from "./components/login/Login";
 import Register from "./components/login/Register";
 import UploadPhotos from "./components/upload/UploadPhoto";
+import RandomPhoto from "./components/random/RandomPhoto";
 import "./styles/App.css";
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
           <Link to="/gallery">Gallery</Link>
           <Link to="/liked">Liked Photos</Link>
           <Link to="/upload">Upload Photos</Link>
+          <Link to="/random">Random Photo</Link>
           {!isAuthenticated ? (
             <Link to="/login">Login</Link>
           ) : (
@@ -55,6 +57,12 @@ const App = () => {
             path="/upload"
             element={
               isAuthenticated ? <UploadPhotos /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/random"
+            element={
+              isAuthenticated ? <RandomPhoto /> : <Navigate to="/login" />
             }
           />
           <Route

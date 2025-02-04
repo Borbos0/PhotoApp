@@ -8,6 +8,8 @@ export default function usePhotos() {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
+  const [archiveUrl, setArchiveUrl] = useState(null);
+  const [archiving, setArchiving] = useState(false);
   const currentPage = useRef(1);
   const loadedPhotosMap = useRef(new Map());
 
@@ -107,6 +109,24 @@ export default function usePhotos() {
     }
   }, []);
 
+  const createArchive = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/archive`);
+
+      if (!response.ok) {
+        throw new Error("Ошибка при создании архива");
+      }
+
+      const data = await response.json();
+      const url = `${API_BASE_URL}${data.url}`;
+      setArchiveUrl(url);
+      return url;
+    } catch (error) {
+      console.error("Ошибка архивации:", error);
+      return null;
+    }
+  }, []);
+
   return {
     photos,
     loading,
@@ -115,6 +135,9 @@ export default function usePhotos() {
     total,
     resetPhotos,
     deletePhotos,
-    fetchPhotos
+    fetchPhotos,
+    createArchive,
+    archiveUrl,
+    archiving
   };
 }

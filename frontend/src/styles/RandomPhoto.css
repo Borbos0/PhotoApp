@@ -1,0 +1,16 @@
+.random-photo-container {
+    max-width: 100vw;
+    max-height: 95vh;
+    min-height: 95vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: #222222; */
+  }
+  
+  .random-photo {
+    max-width: 100vw;
+    max-height: 95vh;
+    min-height: 95vh;
+  }
+  
